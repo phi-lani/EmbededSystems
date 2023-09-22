@@ -1,13 +1,15 @@
 #pragma once
 #include <stdio.h>
 #include <stdlib.h>  // For dynamic memory allocation
-#include <string.h> 
+#include <string> 
 #include <iostream>
 #include <cstdlib>
+#include <msclr/marshal_cppstd.h>
+
 #include"MyForm1.h"
 
 namespace EmbededSystems {
-
+	int ID = 1000;
 	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
@@ -74,6 +76,13 @@ namespace EmbededSystems {
 	private: System::Windows::Forms::TextBox^ txtDate;
 	private: System::Windows::Forms::TextBox^ txtStatus;
 	private: System::Windows::Forms::TextBox^ txtTemp;
+	private: System::Windows::Forms::DataGridView^ dataGridView1;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Column1;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Column2;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Column3;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Column4;
+
+
 
 
 
@@ -124,9 +133,15 @@ namespace EmbededSystems {
 			this->serialPort1 = (gcnew System::IO::Ports::SerialPort(this->components));
 			this->readTimer = (gcnew System::Windows::Forms::Timer(this->components));
 			this->btnRead = (gcnew System::Windows::Forms::Button());
+			this->dataGridView1 = (gcnew System::Windows::Forms::DataGridView());
+			this->Column1 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column2 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column3 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->Column4 = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->groupBox1->SuspendLayout();
 			this->panel1->SuspendLayout();
 			this->groupBox2->SuspendLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// groupBox1
@@ -260,6 +275,7 @@ namespace EmbededSystems {
 			this->txtTemp->TabIndex = 0;
 			this->txtTemp->Text = L"Temperature";
 			this->txtTemp->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
+			
 			// 
 			// btnHistory
 			// 
@@ -288,12 +304,13 @@ namespace EmbededSystems {
 			// 
 			// serialPort1
 			// 
+			this->serialPort1->PortName = L"COM4";
 			this->serialPort1->ReadTimeout = 23;
 			this->serialPort1->WriteTimeout = 30;
 			// 
 			// readTimer
 			// 
-			this->readTimer->Interval = 1;
+			this->readTimer->Interval = 500;
 			this->readTimer->Tick += gcnew System::EventHandler(this, &MyForm::readTimer_Tick);
 			// 
 			// btnRead
@@ -308,11 +325,47 @@ namespace EmbededSystems {
 			this->btnRead->UseVisualStyleBackColor = true;
 			this->btnRead->Click += gcnew System::EventHandler(this, &MyForm::btnRead_Click);
 			// 
+			// dataGridView1
+			// 
+			this->dataGridView1->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
+			this->dataGridView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(4) {
+				this->Column1,
+					this->Column2, this->Column3, this->Column4
+			});
+			this->dataGridView1->Location = System::Drawing::Point(12, 12);
+			this->dataGridView1->Name = L"dataGridView1";
+			this->dataGridView1->Size = System::Drawing::Size(356, 228);
+			this->dataGridView1->TabIndex = 7;
+			
+			// 
+			// Column1
+			// 
+			this->Column1->HeaderText = L"ID";
+			this->Column1->Name = L"Column1";
+			this->Column1->Width = 50;
+			// 
+			// Column2
+			// 
+			this->Column2->HeaderText = L"temperature";
+			this->Column2->Name = L"Column2";
+			this->Column2->Width = 70;
+			// 
+			// Column3
+			// 
+			this->Column3->HeaderText = L"time";
+			this->Column3->Name = L"Column3";
+			// 
+			// Column4
+			// 
+			this->Column4->HeaderText = L"date";
+			this->Column4->Name = L"Column4";
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(963, 277);
+			this->Controls->Add(this->dataGridView1);
 			this->Controls->Add(this->btnRead);
 			this->Controls->Add(this->guiStatus);
 			this->Controls->Add(this->btnHistory);
@@ -325,6 +378,7 @@ namespace EmbededSystems {
 			this->panel1->ResumeLayout(false);
 			this->groupBox2->ResumeLayout(false);
 			this->groupBox2->PerformLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->EndInit();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -389,33 +443,7 @@ private: System::Void btnRead_Click(System::Object^ sender, System::EventArgs^ e
 	
 }
 private: System::Void readTimer_Tick(System::Object^ sender, System::EventArgs^ e) {
-	//if (this->serialPort1->IsOpen) {
-	//	//incomingData = this->serialPort1->ReadExisting();
 
-	//	try
-	//	{
-	//		//"INSERT INTO  TempReadings(@temperature, @time, @date) VALUES(% f, NOW(), NOW()), temperature"
-	//		String^ DBconn = "Data Source=localhost\\sqlexpress;Initial Catalog=SmartDB;Integrated Security=True";
-	//		SqlConnection sqlConn(DBconn);
-	//		sqlConn.Open();
-
-	//		String^ sqlQuery = "INSERT INTO  TempReadings(@temperature, @time, @date)";
-	//		SqlCommand command(sqlQuery, % sqlConn);
-	//		command.Parameters->AddWithValue("@temperature",12.2);
-	//		command.Parameters->AddWithValue("@time", DateTime::Now);
-	//		command.Parameters->AddWithValue("@date", DateTime::Now);
-	//		command.ExecuteNonQuery();
-	//		
-	//		
-	//		
-	//	}
-	//	catch (Exception^ e)
-	//	{
-	//		MessageBox::Show("Failed to connect to datababe", "Database Connection Error");
-	//	}
-
-		//txtTemp->Text = incomingData;
-	//}
 
 
 	if (this->serialPort1->IsOpen) {
@@ -424,21 +452,59 @@ private: System::Void readTimer_Tick(System::Object^ sender, System::EventArgs^ 
 			String^ DBconn = "Data Source=localhost\\sqlexpress;Initial Catalog=SmartDB;Integrated Security=True";
 			SqlConnection sqlConn(DBconn);
 			sqlConn.Open();
+			int temp;
 
-			String^ sqlQuery = "INSERT INTO TempReadings(temperature, time, date) VALUES (@temperature, @time, @date)";
+			//Find a way to convert the incoming into float and change the "Status Bar" accordingly.
+			System::String^ incomingString = serialPort1->ReadExisting();
+			
+			//std::string nativeString = msclr::interop::marshal_as<std::string>(incomingString);
+			
+
+			if (temp <= 18) {
+				txtStatus->Text="Heater On!";
+				txtStatus->BackColor = System::Drawing::Color::Red;
+			}
+			else if (temp >= 32) {
+				txtStatus->Text = "Fan On";
+				txtStatus->BackColor = System::Drawing::Color::Orange;
+			}
+			else {
+				txtStatus->Text = "Fan & Heater OFF";
+				txtStatus->BackColor = System::Drawing::Color::Green;
+			}
+
+		
+			//Constructing a query string and executing the query to insert values into the database.
+			//String^ sqlQuery = "INSERT INTO TempReadings(temperature, time, date) VALUES (@temperature, @time, @date)";
+			String^ sqlQuery = "DELETE FROM TempReadings";
 			SqlCommand command(sqlQuery, % sqlConn);
-			command.Parameters->AddWithValue("@temperature", 12.2);
+			command.Parameters->AddWithValue("@temperature",temp);
 			command.Parameters->AddWithValue("@time", DateTime::Now);
 			command.Parameters->AddWithValue("@date", DateTime::Now);
 			command.ExecuteNonQuery();
+
+			//Formatting the DateTime to a String^ in order to display it on the GUI.
+			System::DateTime dateTime = DateTime::Now;
+			System::String^ dateTimeString = dateTime.ToString();
+			System::String^ dateOnly = dateTime.ToString("yyyy-MM-dd");
+			System::String^ timeOnly = dateTime.ToString("HH:mm");
+			System::String ^ temparature = incomingString->ToString();
+
+			txtTemp->Text = temparature;
+			txtDate->Text = dateTimeString;
+		
+
+			//Pushing the values into the GUI data grid view.
+			dataGridView1->Rows->Add(ID++,temp,timeOnly,dateOnly);
 		}
 		catch (Exception^ e)
 		{
-			MessageBox::Show("Failed to connect to database", "Database Connection Error");
+			MessageBox::Show("Failed to connect to database", e->Message);
 		}
 	}
 
 }
+
 
 
 };

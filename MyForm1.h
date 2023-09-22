@@ -53,6 +53,7 @@ namespace EmbededSystems {
 
 	protected:
 	private: System::Windows::Forms::Button^ button2;
+	private: System::Windows::Forms::DataVisualization::Charting::Chart^ chart1;
 
 	private:
 		/// <summary>
@@ -67,8 +68,13 @@ namespace EmbededSystems {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea1 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
+			System::Windows::Forms::DataVisualization::Charting::Legend^ legend1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
+			System::Windows::Forms::DataVisualization::Charting::Series^ series1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
 			this->btnBack = (gcnew System::Windows::Forms::Button());
 			this->button2 = (gcnew System::Windows::Forms::Button());
+			this->chart1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// btnBack
@@ -94,15 +100,33 @@ namespace EmbededSystems {
 			this->button2->Text = L"SHOW GRAPH";
 			this->button2->UseVisualStyleBackColor = true;
 			// 
+			// chart1
+			// 
+			chartArea1->Name = L"ChartArea1";
+			this->chart1->ChartAreas->Add(chartArea1);
+			legend1->Name = L"Legend1";
+			this->chart1->Legends->Add(legend1);
+			this->chart1->Location = System::Drawing::Point(44, 19);
+			this->chart1->Name = L"chart1";
+			series1->ChartArea = L"ChartArea1";
+			series1->Legend = L"Legend1";
+			series1->Name = L"Series1";
+			this->chart1->Series->Add(series1);
+			this->chart1->Size = System::Drawing::Size(866, 192);
+			this->chart1->TabIndex = 2;
+			this->chart1->Text = L"chart1";
+			// 
 			// MyForm1
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(961, 261);
+			this->Controls->Add(this->chart1);
 			this->Controls->Add(this->button2);
 			this->Controls->Add(this->btnBack);
 			this->Name = L"MyForm1";
 			this->Text = L"Smart Temperature Control System";
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->EndInit();
 			this->ResumeLayout(false);
 
 		}
