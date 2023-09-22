@@ -275,7 +275,6 @@ namespace EmbededSystems {
 			this->txtTemp->TabIndex = 0;
 			this->txtTemp->Text = L"Temperature";
 			this->txtTemp->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
-			
 			// 
 			// btnHistory
 			// 
@@ -304,13 +303,12 @@ namespace EmbededSystems {
 			// 
 			// serialPort1
 			// 
-			this->serialPort1->PortName = L"COM4";
 			this->serialPort1->ReadTimeout = 23;
 			this->serialPort1->WriteTimeout = 30;
 			// 
 			// readTimer
 			// 
-			this->readTimer->Interval = 500;
+			this->readTimer->Interval = 1;
 			this->readTimer->Tick += gcnew System::EventHandler(this, &MyForm::readTimer_Tick);
 			// 
 			// btnRead
@@ -336,7 +334,6 @@ namespace EmbededSystems {
 			this->dataGridView1->Name = L"dataGridView1";
 			this->dataGridView1->Size = System::Drawing::Size(356, 228);
 			this->dataGridView1->TabIndex = 7;
-			
 			// 
 			// Column1
 			// 
@@ -452,12 +449,20 @@ private: System::Void readTimer_Tick(System::Object^ sender, System::EventArgs^ 
 			String^ DBconn = "Data Source=localhost\\sqlexpress;Initial Catalog=SmartDB;Integrated Security=True";
 			SqlConnection sqlConn(DBconn);
 			sqlConn.Open();
-			int temp;
+			float temp;
 
 			//Find a way to convert the incoming into float and change the "Status Bar" accordingly.
 			System::String^ incomingString = serialPort1->ReadExisting();
+			std::string str = msclr::interop::marshal_as<std::string>(incomingString);
 			
-			//std::string nativeString = msclr::interop::marshal_as<std::string>(incomingString);
+			// Remove newline and carriage return characters
+			str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
+			str.erase(std::remove(str.begin(), str.end(), '\r'), str.end());
+
+			// Convert the remaining string to a float
+			 temp = std::stof(str);
+
+		
 			
 
 			if (temp <= 18) {
@@ -475,8 +480,8 @@ private: System::Void readTimer_Tick(System::Object^ sender, System::EventArgs^ 
 
 		
 			//Constructing a query string and executing the query to insert values into the database.
-			//String^ sqlQuery = "INSERT INTO TempReadings(temperature, time, date) VALUES (@temperature, @time, @date)";
-			String^ sqlQuery = "DELETE FROM TempReadings";
+			String^ sqlQuery = "INSERT INTO TempReadings(temperature, time, date) VALUES (@temperature, @time, @date)";
+			//String^ sqlQuery = "DELETE FROM TempReadings";
 			SqlCommand command(sqlQuery, % sqlConn);
 			command.Parameters->AddWithValue("@temperature",temp);
 			command.Parameters->AddWithValue("@time", DateTime::Now);
@@ -488,14 +493,14 @@ private: System::Void readTimer_Tick(System::Object^ sender, System::EventArgs^ 
 			System::String^ dateTimeString = dateTime.ToString();
 			System::String^ dateOnly = dateTime.ToString("yyyy-MM-dd");
 			System::String^ timeOnly = dateTime.ToString("HH:mm");
-			System::String ^ temparature = incomingString->ToString();
+			
 
-			txtTemp->Text = temparature;
+			txtTemp->Text = incomingString;
 			txtDate->Text = dateTimeString;
 		
 
 			//Pushing the values into the GUI data grid view.
-			dataGridView1->Rows->Add(ID++,temp,timeOnly,dateOnly);
+			dataGridView1->Rows->Add(ID++,incomingString->ToString(),timeOnly,dateOnly);
 		}
 		catch (Exception^ e)
 		{
